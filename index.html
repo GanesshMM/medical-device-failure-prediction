@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedStream Dashboard - Medical Device Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-container">
+        <div class="loading-logo">🏥</div>
+        <h1>Medical Device Failure Prediction System</h1>
+        <h2>🏆 Hackathon Project 2025 - AI/ML for Healthcare Safety</h2>
+        <div class="loading-progress">
+            <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Initializing...</div>
+        </div>
+        <div class="loading-features">
+            <div id="feature1" class="feature">✓ Apache Spark Streaming</div>
+            <div id="feature2" class="feature">✓ Real-time Risk Prediction</div>
+            <div id="feature3" class="feature">✓ Hospital Integration Ready</div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1 class="system-title">MedStream Dashboard</h1>
+                <div class="live-status">
+                    <div class="status-dot live"></div>
+                    <span>Live System Active</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="theme-toggle">
+                    <button class="theme-btn" id="themeToggle" title="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
+                <div class="current-time" id="currentTime"></div>
+                <div class="last-update">
+                    <span>Last Update: </span>
+                    <span id="lastUpdateTime">--:--</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="nav-container">
+            <button class="nav-tab active" data-tab="dashboard">
+                <span class="tab-icon">📊</span>
+                Live Dashboard
+            </button>
+            <button class="nav-tab" data-tab="predictions">
+                <span class="tab-icon">🔮</span>
+                Manual Predictions
+            </button>
+            <button class="nav-tab" data-tab="inventory">
+                <span class="tab-icon">📋</span>
+                Device Inventory
+            </button>
+            <button class="nav-tab" data-tab="alerts">
+                <span class="tab-icon">🚨</span>
+                Live Alerts
+            </button>
+            <button class="nav-tab" data-tab="analytics">
+                <span class="tab-icon">📈</span>
+                Streaming Analytics
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Live Dashboard Tab -->
+        <section class="tab-content active" id="dashboard">
+            <!-- Statistics Cards -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon">🏥</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalDevices">24</div>
+                        <div class="stat-label">Total Devices</div>
+                    </div>
+                </div>
+                <div class="stat-card operational">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="operationalDevices">20</div>
+                        <div class="stat-label">Operational</div>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="warningDevices">3</div>
+                        <div class="stat-label">Warning</div>
+                    </div>
+                </div>
+                <div class="stat-card critical">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="criticalDevices">1</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <h3>Real-time Device Metrics</h3>
+                    <canvas id="metricsChart"></canvas>
+                </div>
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <h3>Risk Distribution</h3>
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="controls-section">
+                <div class="search-box">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search devices...">
+                </div>
+                <select class="form-control" id="locationFilter">
+                    <option value="">All Locations</option>
+                    <option value="ICU Ward A">ICU Ward A</option>
+                    <option value="ICU Ward B">ICU Ward B</option>
+                    <option value="Emergency Dept">Emergency Dept</option>
+                    <option value="Surgery Room 1">Surgery Room 1</option>
+                    <option value="Surgery Room 2">Surgery Room 2</option>
+                    <option value="Surgery Room 3">Surgery Room 3</option>
+                    <option value="Radiology Dept">Radiology Dept</option>
+                    <option value="Nephrology Unit">Nephrology Unit</option>
+                </select>
+            </div>
+
+            <!-- Device Grid -->
+            <div class="device-grid" id="deviceGrid">
+                <!-- Device cards will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Manual Predictions Tab -->
+        <section class="tab-content" id="predictions">
+            <div class="predictions-header">
+                <h2>Manual Predictive Analysis</h2>
+                <p>Enter device parameters manually to get instant ML-based failure predictions</p>
+            </div>
+            
+            <div class="prediction-form-container">
+                <form class="prediction-form" id="predictionForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Device Name</label>
+                            <select class="form-control" id="deviceName" required>
+                                <option value="">Select Device Name</option>
+                                <option value="Alaris GH">Alaris GH</option>
+                                <option value="Baxter AK 96">Baxter AK 96</option>
+                                <option value="Baxter Flo-Gard">Baxter Flo-Gard</option>
+                                <option value="Datex Ohmeda S5">Datex Ohmeda S5</option>
+                                <option value="Drager Fabius Trio">Drager Fabius Trio</option>
+                                <option value="Drager V500">Drager V500</option>
+                                <option value="Fresenius 4008">Fresenius 4008</option>
+                                <option value="GE Aisys">GE Aisys</option>
+                                <option value="GE Logiq E9">GE Logiq E9</option>
+                                <option value="GE MAC 2000">GE MAC 2000</option>
+                                <option value="GE Revolution">GE Revolution</option>
+                                <option value="Hamilton G5">Hamilton G5</option>
+                                <option value="HeartStart FRx">HeartStart FRx</option>
+                                <option value="Lifepak 20">Lifepak 20</option>
+                                <option value="NxStage System One">NxStage System One</option>
+                                <option value="Philips EPIQ">Philips EPIQ</option>
+                                <option value="Philips HeartStrart">Philips HeartStrart</option>
+                                <option value="Philips Ingenuity">Philips Ingenuity</option>
+                                <option value="Phillips PageWriter">Phillips PageWriter</option>
+                                <option value="Puritan Bennett 980">Puritan Bennett 980</option>
+                                <option value="Siemens Acuson">Siemens Acuson</option>
+                                <option value="Siemens S2000">Siemens S2000</option>
+                                <option value="Smiths Medfusion">Smiths Medfusion</option>
+                                <option value="Zoll R Series">Zoll R Series</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Device Type</label>
+                            <select class="form-control" id="deviceType" required>
+                                <option value="">Select Device Type</option>
+                                <option value="Anesthesia Machine">Anesthesia Machine</option>
+                                <option value="CT Scanner">CT Scanner</option>
+                                <option value="Defibrillator">Defibrillator</option>
+                                <option value="Dialysis Machine">Dialysis Machine</option>
+                                <option value="ECG Monitor">ECG Monitor</option>
+                                <option value="Infusion Pump">Infusion Pump</option>
+                                <option value="Patient Ventilator">Patient Ventilator</option>
+                                <option value="Ultrasound Machine">Ultrasound Machine</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Runtime Hours</label>
+                            <input type="number" class="form-control" id="runtimeHours" placeholder="2500.5" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Temperature (°C)</label>
+                            <input type="number" class="form-control" id="temperature" placeholder="23.2" step="0.1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Pressure (kPa)</label>
+                            <input type="number" class="form-control" id="pressure" placeholder="100.5" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vibration (mm/s)</label>
+                            <input type="number" class="form-control" id="vibration" placeholder="1.2" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Current Draw (A)</label>
+                            <input type="number" class="form-control" id="currentDraw" placeholder="1.5" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Signal/Noise Level</label>
+                            <input type="number" class="form-control" id="signalNoise" placeholder="2.1" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn--primary btn--lg btn--full-width">
+                        <span class="btn-icon">🔮</span>
+                        Run Predictive Analysis
+                    </button>
+                </form>
+                
+                <div class="prediction-results hidden" id="predictionResults">
+                    <h3>Prediction Results</h3>
+                    <div class="result-cards">
+                        <div class="result-card">
+                            <div class="result-label">Failure Risk</div>
+                            <div class="result-value" id="predictedRisk">-</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Confidence</div>
+                            <div class="result-value" id="confidence">-</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Time to Failure</div>
+                            <div class="result-value" id="timeToFailure">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Device Inventory Tab -->
+        <section class="tab-content" id="inventory">
+            <div class="inventory-header">
+                <h2>Device Inventory</h2>
+                <div class="inventory-controls">
+                    <input type="text" class="form-control" id="inventorySearch" placeholder="Search inventory...">
+                    <select class="form-control" id="inventoryTypeFilter">
+                        <option value="">All Types</option>
+                        <option value="Anesthesia Machine">Anesthesia Machine</option>
+                        <option value="CT Scanner">CT Scanner</option>
+                        <option value="Defibrillator">Defibrillator</option>
+                        <option value="Dialysis Machine">Dialysis Machine</option>
+                        <option value="ECG Monitor">ECG Monitor</option>
+                        <option value="Infusion Pump">Infusion Pump</option>
+                        <option value="Patient Ventilator">Patient Ventilator</option>
+                        <option value="Ultrasound Machine">Ultrasound Machine</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="inventory-table-container">
+                <table class="inventory-table" id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Device</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Patient</th>
+                            <th>Status</th>
+                            <th>Risk</th>
+                            <th>Maintenance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Live Alerts Tab -->
+        <section class="tab-content" id="alerts">
+            <div class="alerts-header">
+                <h2>System Alerts</h2>
+                <div class="alerts-controls">
+                    <button class="btn btn--secondary" id="toggleSound">
+                        <span id="soundIcon">🔊</span>
+                        Sound
+                    </button>
+                    <button class="btn btn--secondary" id="clearAllAlerts">Clear All</button>
+                </div>
+            </div>
+            
+            <div class="alerts-list" id="alertsList">
+                <!-- Alerts will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Streaming Analytics Tab -->
+        <section class="tab-content" id="analytics">
+            <div class="analytics-header">
+                <h2>Real-Time Streaming Analytics</h2>
+                <p>Live system performance and streaming metrics</p>
+                <div class="sse-indicator">
+                    <div class="status-dot live"></div>
+                    <span>Server-Sent Events Active</span>
+                </div>
+            </div>
+            
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Connection Performance</h3>
+                    <div class="metric-row">
+                        <span>CONNECTION TYPE:</span>
+                        <span class="status--success">Server-Sent Events</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>UPDATE FREQUENCY:</span>
+                        <span>3 seconds</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>DATA QUALITY:</span>
+                        <span class="status--success">
+                            <span class="status-dot-inline live"></span>
+                            Excellent
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span>LATENCY:</span>
+                        <span>&lt; 100ms</span>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3>System Health</h3>
+                    <div class="metric-row">
+                        <span>ACTIVE DEVICES:</span>
+                        <span class="metric-number" id="activeDevicesCount">8</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>DATA POINTS/MIN:</span>
+                        <span class="metric-number" id="dataPointsPerMin">160</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>PREDICTIONS/MIN:</span>
+                        <span class="metric-number" id="predictionsPerMin">20</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>SYSTEM HEALTH:</span>
+                        <span class="status--success">
+                            <span class="status-dot-inline live"></span>
+                            Optimal
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3>Real-Time Trends</h3>
+                    <div class="metric-row">
+                        <span>DEGRADING DEVICES:</span>
+                        <span class="status--error metric-number" id="degradingDevices">2</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>IMPROVING DEVICES:</span>
+                        <span class="status--success metric-number" id="improvingDevices">5</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>STABLE DEVICES:</span>
+                        <span class="metric-number" id="stableDevices">1</span>
+                    </div>
+                    <div class="metric-row">
+                        <span>ALERTS GENERATED:</span>
+                        <span class="metric-number" id="alertsGenerated">6</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analytics-footer">
+                <div class="refresh-indicator">
+                    <span class="status-dot live"></span>
+                    <span>Auto-refreshing every 3 seconds</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Alert Popup Modal -->
+    <div class="alert-popup hidden" id="alertPopup">
+        <div class="alert-popup-content">
+            <div class="alert-popup-header">
+                <div class="alert-icon" id="alertIcon">🚨</div>
+                <div class="alert-popup-title" id="alertPopupTitle">Critical Alert</div>
+                <button class="alert-close-btn" id="alertCloseBtn">×</button>
+            </div>
+            <div class="alert-popup-body">
+                <div class="alert-device-info" id="alertDeviceInfo"></div>
+                <div class="alert-message" id="alertMessage"></div>
+                <div class="alert-recommendations" id="alertRecommendations"></div>
+            </div>
+            <div class="alert-popup-footer">
+                <button class="btn btn--secondary" id="snoozeAlert">Snooze 5min</button>
+                <button class="btn btn--primary" id="acknowledgeAlert">Acknowledge</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Detail Modal -->
+    <div class="modal hidden" id="deviceModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Device Details</h2>
+                <button class="close-btn" id="closeModalBtn">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
