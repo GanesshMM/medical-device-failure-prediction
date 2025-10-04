@@ -173,12 +173,13 @@ Create a `.env` file in the root directory with the following configurations:
 AZURE_ML_ENDPOINT=https://your-endpoint.azureml.net/score
 AZURE_ML_KEY=your_azure_ml_key
 ```
-*📹 Tutorial: [Azure ML Endpoints Setup](https://www.youtube.com/watch?v=VIDEO_LINK)*
+*📹 Tutorial: [Azure ML Endpoints Setup](https://www.youtube.com/watch?v=XSuDno7gpQ8)*
 
 **Azure Blob Storage:**
 ```bash
 AZURE_BLOB_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
 ```
+*📹 Tutorial: [ Azure Blob Storage Tutorial](https://www.youtube.com/watch?v=dgGV2HlVE9E)*
 *📖 Guide: [Azure Storage Access Keys](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage)*
 
 **Azure Active Directory:**
@@ -232,9 +233,10 @@ python stream_pipeline.py
 
 ### Step 2: Start the FastAPI Backend 🚀
 
-In the same directory, launch the API server:
+In a new terminal, launch the API server:
 
 ```bash
+cd workflows
 python api_server.py
 ```
 
@@ -242,7 +244,7 @@ python api_server.py
 
 ### Step 3: Start the Frontend Dashboard 💻
 
-Navigate to the dashboard directory and start the development server:
+In a new terminal, navigate to the dashboard directory and start the development server:
 
 ```bash
 cd ../medical-dashboard
