@@ -128,6 +128,7 @@ medical-device-failure-prediction/
 ├── 📂 workflows/                 # Main execution workflows
 │   ├── stream_pipeline.py       # Real-time telemetry processing
 │   ├── api_server.py            # FastAPI server
+│   ├── retrieve_predictions.py  # Retrieve predictions from blob storage
 │   └── run_pipeline.py          # Pipeline orchestration
 ├── 📂 testing/                   # Test scripts
 ├── 📄 requirements.txt           # Python dependencies
